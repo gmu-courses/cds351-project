@@ -1,42 +1,31 @@
-program summarize_observations 
+program summarize_observations
     implicit none
-    integer, parameter :: n = 6
     real, parameter :: missing_value = -999.0
-    integer :: i, valid_count
-    real :: observation, sum_value, mean
-    valid_count = 0
-    sum_value   = 0.0
-
-    ! loop over observations
-    do i = 1, n
-
-        ! Assign observations the value of i;
-        ! make observations 3 and 5 missing
-        if (i == 3 .or. i == 5) then
-            observation = missing_value
-        else
-            observation = real(i)
-        end if
-
-        ! Include only valid observations
-        ! compute sum_value and valid_count
-        if (observation /= missing_value) then
-            sum_value = sum_value + observation
-            valid_count = valid_count + 1
-        end if
-
-    end do
-    ! Avoid division by zero if all observations are missing
+    real :: observations(6)
+    real :: mean, sum_value, minimum, maximum
+    integer :: valid_count
+    
+    observations = [ 1.3, 4.1, 0.6, missing_value, &
+        2.4, 3.2 ]
+    
+    valid_count = count(observations /= missing_value)
+    
     if (valid_count > 0) then
-        ! Calculate mean here:
-         mean = sum_value / real(valid_count)
+        sum_value = sum(observations, mask = observations /= missing_value)
+        minimum = minval(observations, mask = observations /= missing_value)
+        maximum = maxval(observations, mask = observations /= missing_value)
+        mean = sum_value / real(valid_count)
+    end if
 
-        ! Results
+    if (valid_count > 0) then
+        print *, "Number of observations:", size(observations)
         print *, "Valid observations:", valid_count
-        print *, "Sum:", sum_value
+        print *, "Minimum:", minimum
+        print *, "Maximum:", maximum
         print *, "Mean:", mean
     else
-        print *, "No valid observations"
+        print *, "No valid observations."
     end if
-    
 end program summarize_observations
+
+
