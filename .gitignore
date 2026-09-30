@@ -1,0 +1,7 @@
+*.o
+*.mod
+*.exe
+*.log
+*.x
+.DS_Store
+output/
