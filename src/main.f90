@@ -1,36 +1,28 @@
 program summarize_observations
+    use io_mod, only: read_config, read_observations, write_summary
     use stats_mod, only: summarize, mean_from_total
     implicit none
     
-    real, parameter :: missing_value = -999.0
-    real :: observations(6)
+    real, allocatable :: observations(:)
     real :: mean, minimum, maximum, total
     integer :: nvalid
+    ! namelist variables
+    character(len=200) :: input_file
+    character(len=200) :: output_file
+    character(len=80) :: dataset_name
+    character(len=20) :: units
+    real :: missing_value
+    
+    call read_config("config.nml", input_file, output_file, &
+        dataset_name, units, missing_value)
 
-    observations = [ 1.3, 4.1, 0.6, missing_value, &
-        2.4, 3.2 ]
+    call read_observations(input_file, observations)
     
     call summarize(observations, missing_value, total, minimum, maximum, nvalid)
     mean = mean_from_total(total, nvalid, missing_value)
-    call print_summary(minimum, maximum, mean, nvalid)
-    
-contains
-    
-    subroutine print_summary(minimum, maximum, mean, nvalid)
-        implicit none
-        real, intent(in) :: minimum, maximum, mean
-        integer, intent(in) :: nvalid
-        
-        if (nvalid > 0) then
-            print *, "Number of observations:", size(observations)
-            print *, "Valid observations:", nvalid
-            print *, "Minimum:", minimum
-            print *, "Maximum:", maximum
-            print *, "Mean:", mean
-        else
-            print *, "No valid observations."
-        end if
-        
-    end subroutine print_summary
+
+    call write_summary(output_file, dataset_name, units, &
+        minimum, maximum, mean, nvalid)
+
 
 end program summarize_observations
