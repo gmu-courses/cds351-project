@@ -5,3 +5,5 @@
 *.x
 .DS_Store
 output/
+build/
+bin/
